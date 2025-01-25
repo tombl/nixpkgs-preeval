@@ -1,0 +1,23 @@
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch: [aarch64, x86_64]
+        os: [linux, darwin]
+        channel: [unstable, "24.11"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: DeterminateSystems/magic-nix-cache-action@main
+      - run: |
+          eval "$(nix print-dev-env)"
+          nix-eval-jobs --workers 4 --max-memory-size 3000 --flake ./nixpkgs#'"${{matrix.channel}}"'.legacyPackages.${{matrix.arch}}-${{matrix.os}} 2>/dev/null | ./mkdb.py db.sqlite
+          zstd -T0 -19 db.sqlite
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{matrix.arch}}-${{matrix.os}}-${{matrix.channel}}
+          path: db.sqlite.zst
