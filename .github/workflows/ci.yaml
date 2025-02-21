@@ -49,7 +49,7 @@ jobs:
       - name: Build
         run: |
           eval "$(nix print-dev-env)"
-          nix-eval-jobs --workers 4 --max-memory-size 3000 --flake ./nixpkgs#'"${{matrix.channel}}"'.legacyPackages.${{matrix.arch}}-${{matrix.os}} 2>/dev/null | ./mkdb.py ${{matrix.arch}}-${{matrix.os}}-${{matrix.channel}}.db
+          nix-eval-jobs --workers 4 --max-memory-size 3000 --flake ./nixpkgs#'"${{matrix.channel}}"'.legacyPackages.${{matrix.arch}}-${{matrix.os}} 2>/dev/null | pv --line-mode --size 125000 | ./mkdb.py ${{matrix.arch}}-${{matrix.os}}-${{matrix.channel}}.db
           zstd -T0 -19 ${{matrix.arch}}-${{matrix.os}}-${{matrix.channel}}.db
           gh release upload ${{needs.create-release.outputs.release}} ${{matrix.arch}}-${{matrix.os}}-${{matrix.channel}}.db.zst --clobber
         env:
