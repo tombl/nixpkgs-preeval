@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: nixbuild/nix-quick-install-action@v30
+      - uses: nixbuild/nix-quick-install-action@v31
       - name: Update the nixpkgs flake lock
         run: |
           cd nixpkgs
@@ -45,7 +45,7 @@ jobs:
         channel: [unstable, "24.11"]
     steps:
       - uses: actions/checkout@v4
-      - uses: nixbuild/nix-quick-install-action@v30
+      - uses: nixbuild/nix-quick-install-action@v31
       - name: Build
         run: |
           eval "$(nix print-dev-env)"
